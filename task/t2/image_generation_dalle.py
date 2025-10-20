@@ -1,3 +1,5 @@
+import base64
+
 from task.client import OpenAIClient
 from task.constants import OPENAI_HOST
 
@@ -50,4 +52,11 @@ class Quality:
 #   - Use OpenAIClient to connect to OpenAI API
 #   - Use /v1/images/generations endpoint
 #   - The link with generated image will be returned in response
+
+url = "/v1/images/generations"
+client = OpenAIClient(OPENAI_HOST + url)
+completion=client.call(model="dall-e-3", prompt="smiling catdog.", size=Size.square, style=Style.vivid, quality=Quality.hd)
+
+img_url=completion["url"]
+print(img_url)
 

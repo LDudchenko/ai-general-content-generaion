@@ -21,3 +21,44 @@ from task.constants import OPENAI_HOST, OPENAI_API_KEY
 #   - Use audio={"voice": "ballad", "format": "mp3"}
 #   - Similar method to encode audio https://platform.openai.com/docs/guides/images-vision?api-mode=chat&lang=python
 
+with open("question.mp3", "rb") as f:
+    audio_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+payload = {
+    "model": "gpt-4o-audio-preview",
+    "modalities": ["text", "audio"],
+    "audio": {
+        "voice": "ballad",
+        "format": "mp3"
+    },
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_audio",
+                    "input_audio": {
+                        "data": audio_base64,
+                        "format": "mp3"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+headers = {
+    "Authorization": f"Bearer {OPENAI_API_KEY}",
+    "Content-Type": "application/json"
+}
+
+url="/v1/chat/completions"
+response = requests.post(OPENAI_HOST+url, headers=headers, json=payload)
+
+result = response.json()
+audio_data = result["choices"][0]["message"]["audio"]["data"]
+audio_bytes = base64.b64decode(audio_data)
+
+with open("answer.mp3", "wb") as f:
+    f.write(audio_bytes)
+

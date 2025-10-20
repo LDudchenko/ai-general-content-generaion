@@ -16,3 +16,19 @@ from task.constants import OPENAI_HOST, OPENAI_API_KEY
 #   - Use /v1/audio/transcriptions endpoint
 #   - Use whisper-1 or gpt-4o-transcribe model
 
+url="/v1/audio/transcriptions"
+with open("codeus_audio.mp3", "rb") as f:
+    files = {
+        "file": f,
+    }
+    data = {
+        "model": "gpt-4o-transcribe"
+    }
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
+    }
+
+    response = requests.post(OPENAI_HOST+url, headers=headers, files=files, data=data)
+
+print(response.json())
+

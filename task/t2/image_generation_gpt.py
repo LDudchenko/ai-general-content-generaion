@@ -33,5 +33,13 @@ from task.constants import OPENAI_HOST
 #   - Use OpenAIClient to connect to OpenAI API
 #   - Use /v1/images/generations endpoint
 #   - The image will be returned in base64 format
+url = "/v1/images/generations"
+client = OpenAIClient(OPENAI_HOST + url)
+completion=client.call(model="gpt-image-1", prompt="smiling catdog.")
 
+img_data=completion["data"][0]["b64_json"]
 
+image_bytes = base64.b64decode(img_data)
+
+with open("result_gpt.png", "wb") as f:
+    f.write(image_bytes)

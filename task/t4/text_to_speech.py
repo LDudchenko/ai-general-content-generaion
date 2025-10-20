@@ -5,6 +5,7 @@ import requests
 
 from task.constants import OPENAI_HOST, OPENAI_API_KEY
 
+
 # https://platform.openai.com/docs/guides/text-to-speech
 # Request:
 # curl https://api.openai.com/v1/audio/speech \
@@ -19,7 +20,7 @@ from task.constants import OPENAI_HOST, OPENAI_API_KEY
 # Response:
 #   bytes with audio
 
-#TODO:
+# TODO:
 # You need to convert text to speech:
 #   - Create Client that will go to speech OpenAI API
 #   - Call API
@@ -42,3 +43,20 @@ class Voice:
     sage: str = 'sage'
     shimmer: str = 'shimmer'
 
+
+payload = {
+    "model": "gpt-4o-mini-tts",
+    "input": "Why can't we say that black is white?",
+    "voice": Voice.coral,
+    "instructions": "Speak in a cheerful and positive tone."
+}
+
+headers = {
+    "Authorization": f"Bearer {OPENAI_API_KEY}",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(OPENAI_HOST+"/v1/audio/speech", headers=headers, json=payload)
+
+with open("answer.mp3", "wb") as f:
+    f.write(response.content)
