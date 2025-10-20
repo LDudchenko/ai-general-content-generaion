@@ -57,6 +57,7 @@ url = "/v1/images/generations"
 client = OpenAIClient(OPENAI_HOST + url)
 completion=client.call(model="dall-e-3", prompt="smiling catdog.", size=Size.square, style=Style.vivid, quality=Quality.hd)
 
+# generated image: https://oaidalleapiprodscus.blob.core.windows.net/private/org-SLikGSZZXF1yDs26kPfi9MhU/user-5lrZEcQnIohFZaxPhMajZekB/img-6jo2m2JSHqOotkPZd1BohXZn.png?st=2025-10-20T19%3A07%3A41Z&se=2025-10-20T21%3A07%3A41Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-10-20T19%3A27%3A32Z&ske=2025-10-21T19%3A27%3A32Z&sks=b&skv=2024-08-04&sig=2MhV4EUruc%2B6jcoGjHwaREPWm3cUBJCcMYkZ8xC4iNc%3D
 img_url=completion["url"]
 print(img_url)
 
