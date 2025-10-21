@@ -43,6 +43,34 @@ class Voice:
     sage: str = 'sage'
     shimmer: str = 'shimmer'
 
+class TextToSpeechOpenAIClient:
+
+    def __init__(self):
+        api_key = OPENAI_API_KEY
+        if not api_key:
+            raise ValueError("API key cannot be null or empty")
+
+        self._api_key = "Bearer " + api_key
+        self._endpoint = OPENAI_HOST + "/v1/audio/speech"
+
+    def call(self, print_request = True, print_response = True, **kwargs):
+        headers = {
+            "Authorization": self._api_key,
+            "Content-Type": "application/json"
+        }
+
+        if print_request:
+            print(json.dumps(kwargs, indent=2))
+
+        response = requests.post(url=self._endpoint, headers=headers, json=kwargs)
+
+        if response.status_code == 200:
+            if print_response:
+                print(response)
+
+            return response.content
+
+        raise Exception(f"HTTP {response.status_code}: {response.text}")
 
 payload = {
     "model": "gpt-4o-mini-tts",
@@ -50,13 +78,8 @@ payload = {
     "voice": Voice.coral,
     "instructions": "Speak in a cheerful and positive tone."
 }
-
-headers = {
-    "Authorization": f"Bearer {OPENAI_API_KEY}",
-    "Content-Type": "application/json"
-}
-
-response = requests.post(OPENAI_HOST+"/v1/audio/speech", headers=headers, json=payload)
+client = TextToSpeechOpenAIClient()
+response = client.call(**payload)
 
 with open("answer.mp3", "wb") as f:
-    f.write(response.content)
+    f.write(response)
