@@ -21,6 +21,37 @@ from task.constants import OPENAI_HOST, OPENAI_API_KEY
 #   - Use audio={"voice": "ballad", "format": "mp3"}
 #   - Similar method to encode audio https://platform.openai.com/docs/guides/images-vision?api-mode=chat&lang=python
 
+
+class SpeechToSpeechOpenAIClient:
+
+    def __init__(self):
+        api_key = OPENAI_API_KEY
+        if not api_key:
+            raise ValueError("API key cannot be null or empty")
+
+        self._api_key = "Bearer " + api_key
+        self._endpoint = OPENAI_HOST + "/v1/chat/completions"
+
+    def call(self, print_request = True, print_response = True, **kwargs):
+        headers = {
+            "Authorization": self._api_key,
+            "Content-Type": "application/json"
+        }
+
+        if print_request:
+            print(json.dumps(kwargs, indent=2))
+
+        response = requests.post(url=self._endpoint, headers=headers, json=kwargs)
+
+        if response.status_code == 200:
+            data = response.json()
+            if print_response:
+                print(json.dumps(data, indent=2))
+
+            return data["choices"][0]["message"]["audio"]["data"]
+
+        raise Exception(f"HTTP {response.status_code}: {response.text}")
+
 with open("question.mp3", "rb") as f:
     audio_base64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -47,18 +78,9 @@ payload = {
     ]
 }
 
-headers = {
-    "Authorization": f"Bearer {OPENAI_API_KEY}",
-    "Content-Type": "application/json"
-}
-
-url="/v1/chat/completions"
-response = requests.post(OPENAI_HOST+url, headers=headers, json=payload)
-
-result = response.json()
-audio_data = result["choices"][0]["message"]["audio"]["data"]
+client = SpeechToSpeechOpenAIClient()
+audio_data = client.call(**payload)
 audio_bytes = base64.b64decode(audio_data)
 
 with open("answer.mp3", "wb") as f:
     f.write(audio_bytes)
-
